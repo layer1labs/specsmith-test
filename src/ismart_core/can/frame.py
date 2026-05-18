@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-
 _CAN_EFF_FLAG = 0x80000000  # Extended frame flag
 _CAN_RTR_FLAG = 0x40000000  # Remote transmission request
 _CAN_ERR_FLAG = 0x20000000  # Error frame
@@ -18,11 +17,11 @@ _CAN_ERR_FLAG = 0x20000000  # Error frame
 class CanFrame:
     """Parsed CAN 2.0B frame."""
 
-    can_id: int          # 11-bit or 29-bit identifier
-    is_extended: bool    # True for 29-bit EFF frames
-    is_rtr: bool         # Remote transmission request
-    dlc: int             # Data length code (0-8)
-    data: bytes          # Frame payload (len == dlc)
+    can_id: int  # 11-bit or 29-bit identifier
+    is_extended: bool  # True for 29-bit EFF frames
+    is_rtr: bool  # Remote transmission request
+    dlc: int  # Data length code (0-8)
+    data: bytes  # Frame payload (len == dlc)
 
     @property
     def is_standard(self) -> bool:
@@ -52,15 +51,12 @@ def parse_frame(raw: bytes) -> CanFrame:
 
     can_id_raw = int.from_bytes(raw[0:4], "little")
     dlc = raw[4] & 0x0F
-    data = raw[8: 8 + dlc]
+    data = raw[8 : 8 + dlc]
 
     is_extended = bool(can_id_raw & _CAN_EFF_FLAG)
     is_rtr = bool(can_id_raw & _CAN_RTR_FLAG)
 
-    if is_extended:
-        can_id = can_id_raw & 0x1FFFFFFF
-    else:
-        can_id = (can_id_raw & 0x7FF00000) >> 20
+    can_id = can_id_raw & 536870911 if is_extended else (can_id_raw & 2146435072) >> 20
 
     return CanFrame(
         can_id=can_id,

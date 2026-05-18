@@ -159,7 +159,11 @@ mod tests {
         assert_eq!(rb.len(), 3, "len should stay at capacity");
 
         // Pop should yield 2, 3, 4 (not 1)
-        assert_eq!(rb.pop(), Some(2), "oldest (1) was dropped, next oldest is 2");
+        assert_eq!(
+            rb.pop(),
+            Some(2),
+            "oldest (1) was dropped, next oldest is 2"
+        );
         assert_eq!(rb.pop(), Some(3));
         assert_eq!(rb.pop(), Some(4));
         assert!(rb.is_empty());

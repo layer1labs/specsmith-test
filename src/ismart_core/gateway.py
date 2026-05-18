@@ -15,7 +15,6 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
 from typing import Any
 
-from ismart_core.can.frame import CanFrame, parse_frame
 from ismart_core.sensor.adc import MedianFilter
 
 _MOCK_INTERVAL = 0.1  # 100 Hz mock data rate

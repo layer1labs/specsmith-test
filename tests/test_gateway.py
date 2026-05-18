@@ -10,9 +10,8 @@ import urllib.request
 
 import pytest
 
-from ismart_core.can.frame import CanFrame, parse_frame
+from ismart_core.can.frame import parse_frame
 from ismart_core.sensor.adc import MedianFilter
-
 
 # ---------------------------------------------------------------------------
 # TEST-001: CAN frame — 11-bit standard ID
@@ -40,12 +39,12 @@ def _make_eff_frame(can_id: int, data: bytes) -> bytes:
 
 def test_can_parse_standard_frame():
     """TEST-001: Parse 11-bit standard CAN frame."""
-    raw = _make_std_frame(0x123, b"\xDE\xAD\xBE\xEF")
+    raw = _make_std_frame(0x123, b"\xde\xad\xbe\xef")
     frame = parse_frame(raw)
     assert frame.can_id == 0x123
     assert not frame.is_extended
     assert frame.dlc == 4
-    assert frame.data == b"\xDE\xAD\xBE\xEF"
+    assert frame.data == b"\xde\xad\xbe\xef"
 
 
 def test_can_parse_extended_frame():
@@ -95,9 +94,9 @@ def test_adc_median_filter_even_number():
 @pytest.fixture(scope="module")
 def gateway_server():
     """Start the gateway server in a background thread for module scope."""
-    from ismart_core.gateway import GatewayHandler, _ThreadedServer, _mock_producer
-
     import queue as _queue
+
+    from ismart_core.gateway import GatewayHandler, _mock_producer, _ThreadedServer
 
     tq: _queue.Queue = _queue.Queue(maxsize=50)
     stop = threading.Event()

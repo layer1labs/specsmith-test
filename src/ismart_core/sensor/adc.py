@@ -7,7 +7,7 @@ filter before publishing to the telemetry bus.
 from __future__ import annotations
 
 from collections import deque
-from typing import Sequence
+from collections.abc import Sequence
 
 
 class MedianFilter:
