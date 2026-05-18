@@ -1,0 +1,12 @@
+[package]
+name = "ismart-telemetry"
+version = "0.1.0"
+edition = "2021"
+description = "Telemetry validation + ring buffer for iSMART gateway (REQ-003, REQ-004)"
+license = "MIT"
+
+[dependencies]
+crc32fast = "1"
+
+[dev-dependencies]
+# no external test deps needed

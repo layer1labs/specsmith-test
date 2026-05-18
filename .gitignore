@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.eggs/
+*.egg-info/
+dist/
+build/
+.venv/
+.env
+
+# Rust
+firmware/rust/target/
+
+# specsmith runtime
+.specsmith/workitems.json
+.specsmith/runs/
+.specsmith/chat/
+.specsmith/sessions/
+.specsmith/ledger.jsonl
+.specsmith/pids/
+.specsmith/logs/
+.specsmith/credits.json
+.specsmith/model-rate-limits.json
+.chronomemory/*.wal
+.chronomemory/*.tmp
+
+# IDE
+.vscode/settings.json
+.idea/
+*.icloud
+.DS_Store
+
+# Test artifacts
+.pytest_cache/
+htmlcov/
+.coverage
+*.log
+/tmp/

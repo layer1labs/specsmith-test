@@ -1,0 +1,186 @@
+name: Persistent — Drift & Regression
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 3 * * 1"  # Weekly Monday 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  governance-drift:
+    name: Governance Drift Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # Full history for drift analysis
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install specsmith
+        run: pip install "git+https://github.com/layer1labs/specsmith.git@main"
+
+      - name: Sync machine state
+        env:
+          SPECSMITH_NO_AUTO_UPDATE: "1"
+          SPECSMITH_PYPI_CHECKED: "1"
+        run: python -m specsmith sync --project-dir .
+
+      - name: Strict governance validation
+        env:
+          SPECSMITH_NO_AUTO_UPDATE: "1"
+          SPECSMITH_PYPI_CHECKED: "1"
+        run: python -m specsmith validate --strict --json --project-dir .
+
+      - name: Governance audit (health ≥ 90%)
+        env:
+          SPECSMITH_NO_AUTO_UPDATE: "1"
+          SPECSMITH_PYPI_CHECKED: "1"
+        run: python -m specsmith audit --project-dir .
+
+      - name: Epistemic audit — stress-test requirements
+        env:
+          SPECSMITH_NO_AUTO_UPDATE: "1"
+          SPECSMITH_PYPI_CHECKED: "1"
+        run: |
+          python -m specsmith epistemic-audit --project-dir . || true
+          # Advisory: epistemic audit failures are tracked but not blocking yet
+
+      - name: LEDGER continuity check
+        env:
+          SPECSMITH_NO_AUTO_UPDATE: "1"
+          SPECSMITH_PYPI_CHECKED: "1"
+        run: |
+          python -c "
+          from pathlib import Path
+          import sys
+          ledger = Path('LEDGER.md')
+          if not ledger.exists():
+              print('FAIL: LEDGER.md missing')
+              sys.exit(1)
+          lines = ledger.read_text(encoding='utf-8').splitlines()
+          entries = [l for l in lines if l.strip().startswith('## ')]
+          print(f'LEDGER entries: {len(entries)}')
+          if len(entries) == 0:
+              print('WARN: no ledger entries found')
+          "
+
+      - name: REQ coverage report
+        env:
+          SPECSMITH_NO_AUTO_UPDATE: "1"
+          SPECSMITH_PYPI_CHECKED: "1"
+        run: |
+          python -m specsmith req gaps --project-dir . || true
+
+      - name: Export governance report
+        env:
+          SPECSMITH_NO_AUTO_UPDATE: "1"
+          SPECSMITH_PYPI_CHECKED: "1"
+        run: |
+          python -m specsmith export --project-dir . \
+            --output /tmp/governance-report.md
+          echo "=== Governance Report ==="
+          head -40 /tmp/governance-report.md
+
+  regression-rust:
+    name: Rust Regression
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Clippy — enforced
+        working-directory: firmware/rust
+        run: cargo clippy -- -D warnings
+
+      - name: Rustfmt check
+        working-directory: firmware/rust
+        run: cargo fmt --all -- --check
+
+      - name: Run all Rust tests
+        working-directory: firmware/rust
+        run: cargo test
+
+  regression-python:
+    name: Python Regression
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install with dev dependencies
+        run: pip install -e ".[dev]"
+
+      - name: ruff lint
+        run: ruff check src/ tests/
+
+      - name: ruff format check
+        run: ruff format --check src/ tests/
+
+      - name: pytest with coverage
+        run: pytest tests/ -v --tb=short --cov=ismart_core --cov-report=term-missing
+
+  long-term-metrics:
+    name: Long-Term Metrics
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    needs: [governance-drift, regression-python, regression-rust]
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install specsmith
+        run: pip install "git+https://github.com/layer1labs/specsmith.git@main"
+
+      - name: Count governance evolution
+        run: |
+          echo "=== Commit history depth ==="
+          git log --oneline | wc -l
+          echo "=== Requirements YAML lines ==="
+          find docs/requirements -name "*.yml" | xargs wc -l
+          echo "=== Tests YAML lines ==="
+          find docs/tests -name "*.yml" | xargs wc -l
+
+      - name: Drift metrics summary
+        env:
+          SPECSMITH_NO_AUTO_UPDATE: "1"
+          SPECSMITH_PYPI_CHECKED: "1"
+        run: |
+          python -c "
+          from pathlib import Path
+          import yaml
+
+          # Count requirements by status
+          for f in sorted(Path('docs/requirements').glob('*.yml')):
+              data = yaml.safe_load(f.read_text())
+              reqs = data.get('requirements', [])
+              by_status = {}
+              for r in reqs:
+                  s = r.get('status', 'unknown')
+                  by_status[s] = by_status.get(s, 0) + 1
+              print(f'{f.stem}: {by_status}')
+          "

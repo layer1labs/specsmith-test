@@ -1,0 +1,94 @@
+# specsmith tests — iSMART Gateway Simulator
+# CANONICAL SOURCE: edit this file, not docs/TESTS.md
+# Required fields: id, title, requirement_id, type, verification_method
+
+- id: TEST-001
+  title: CAN frame parse — standard 11-bit ID
+  requirement_id: REQ-001
+  type: unit
+  verification_method: pytest
+  description: Parse a known-good 11-bit CAN frame and assert field values.
+
+- id: TEST-002
+  title: CAN frame parse — extended 29-bit ID
+  requirement_id: REQ-001
+  type: unit
+  verification_method: pytest
+  description: Parse a 29-bit extended CAN frame and verify identifier masking.
+
+- id: TEST-003
+  title: ADC median filter correctness
+  requirement_id: REQ-002
+  type: unit
+  verification_method: pytest
+  description: Feed 5 samples with a known median and assert filtered output.
+
+- id: TEST-004
+  title: CRC-32C accept valid frame
+  requirement_id: REQ-003
+  type: unit
+  verification_method: cargo test
+  description: A frame with correct CRC-32C passes validation without error.
+
+- id: TEST-005
+  title: CRC-32C reject corrupted frame
+  requirement_id: REQ-003
+  type: unit
+  verification_method: cargo test
+  description: Flipping one byte in the payload causes the CRC check to fail.
+
+- id: TEST-006
+  title: Ring buffer SPSC overflow drops oldest
+  requirement_id: REQ-004
+  type: unit
+  verification_method: cargo test
+  description: Fill the ring buffer beyond capacity; assert the oldest entry is dropped.
+
+- id: TEST-007
+  title: REST /api/health returns JSON
+  requirement_id: REQ-005
+  type: integration
+  verification_method: pytest
+  description: HTTP GET /api/health returns 200 with Content-Type application/json.
+
+- id: TEST-008
+  title: SSE /api/telemetry streams events
+  requirement_id: REQ-005
+  type: integration
+  verification_method: pytest
+  description: Open an SSE connection; assert at least one event is received within 3 s.
+
+- id: TEST-009
+  title: SocketCAN graceful fallback
+  requirement_id: REQ-006
+  type: integration
+  verification_method: pytest
+  description: With vcan0 absent, the gateway returns mock telemetry rather than raising.
+
+- id: TEST-010
+  title: Wayland headless mode
+  requirement_id: REQ-007
+  type: manual
+  verification_method: manual
+  description: When DISPLAY and WAYLAND_DISPLAY are unset, the display stub runs headless.
+
+- id: TEST-011
+  title: specsmith audit exits 0
+  requirement_id: REQ-008
+  type: cli
+  verification_method: bash
+  description: Run specsmith audit --project-dir . and assert exit code 0.
+
+- id: TEST-012
+  title: specsmith sync --check exits 0
+  requirement_id: REQ-009
+  type: cli
+  verification_method: bash
+  description: Run specsmith sync --check --project-dir . and assert exit code 0.
+
+- id: TEST-013
+  title: specsmith validate --strict exits 0
+  requirement_id: REQ-010
+  type: cli
+  verification_method: bash
+  description: Run specsmith validate --strict --json --project-dir . and assert exit 0.

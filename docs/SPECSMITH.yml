@@ -1,0 +1,19 @@
+spec_version: "0.11.3"
+name: specsmith-test
+description: >
+  Integration test harness for specsmith + Kairos.
+  Multi-language IoT gateway simulator: C firmware, Rust embedded RT,
+  Python REST API — governed end-to-end by the AEE lifecycle.
+type: embedded
+language: python
+platforms:
+  - linux
+  - windows
+  - macos
+vcs_platform: github
+branching_strategy: trunk-based
+default_branch: main
+integrations:
+  - agents-md
+  - yaml-governance
+governance_mode: yaml

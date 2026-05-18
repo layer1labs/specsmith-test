@@ -1,0 +1,105 @@
+[
+  {
+    "id": "REQ-001",
+    "title": "CAN-bus Frame Parsing",
+    "description": "The firmware C module SHALL parse CAN 2.0B frames (11-bit and 29-bit identifiers) from the SocketCAN interface within 1 ms latency.",
+    "source": "ARCHITECTURE.md §3",
+    "status": "implemented",
+    "test_ids": [
+      "TEST-001",
+      "TEST-002"
+    ]
+  },
+  {
+    "id": "REQ-002",
+    "title": "Sensor ADC Median Filter",
+    "description": "The firmware SHALL sample the ADC at 100 Hz and apply a 5-sample sliding window median filter before publishing to the telemetry bus.",
+    "source": "ARCHITECTURE.md §3",
+    "status": "implemented",
+    "test_ids": [
+      "TEST-003"
+    ]
+  },
+  {
+    "id": "REQ-003",
+    "title": "Telemetry CRC-32C Validation",
+    "description": "The Rust embedded crate SHALL validate every telemetry record with a CRC-32C checksum and reject frames where CRC does not match.",
+    "source": "ARCHITECTURE.md §4",
+    "status": "implemented",
+    "test_ids": [
+      "TEST-004",
+      "TEST-005"
+    ]
+  },
+  {
+    "id": "REQ-004",
+    "title": "Ring Buffer SPSC Overflow Protection",
+    "description": "The Rust ring buffer SHALL use a lock-free SPSC design and drop the oldest sample (not block) when the buffer is full.",
+    "source": "ARCHITECTURE.md §4",
+    "status": "implemented",
+    "test_ids": [
+      "TEST-006"
+    ]
+  },
+  {
+    "id": "REQ-005",
+    "title": "Python REST Telemetry Gateway",
+    "description": "The Python API SHALL expose telemetry over HTTP/SSE at /api/telemetry with JSON payloads, supporting up to 10 concurrent SSE subscribers.",
+    "source": "ARCHITECTURE.md §5",
+    "status": "implemented",
+    "test_ids": [
+      "TEST-007",
+      "TEST-008"
+    ]
+  },
+  {
+    "id": "REQ-006",
+    "title": "SocketCAN Graceful Fallback",
+    "description": "The Python layer SHALL bind to the SocketCAN virtual interface (vcan0) and gracefully degrade to mock data when the interface is unavailable.",
+    "source": "ARCHITECTURE.md §5",
+    "status": "implemented",
+    "test_ids": [
+      "TEST-009"
+    ]
+  },
+  {
+    "id": "REQ-007",
+    "title": "Wayland Display Stub",
+    "description": "A Wayland EGL stub SHALL render a minimal telemetry dashboard using PySide6, falling back to headless mode when no display is available.",
+    "source": "ARCHITECTURE.md §6",
+    "status": "partial",
+    "test_ids": [
+      "TEST-010"
+    ]
+  },
+  {
+    "id": "REQ-008",
+    "title": "Governance Audit Health",
+    "description": "The project SHALL maintain specsmith audit health at all times. CI MUST fail if specsmith audit returns a non-zero exit code.",
+    "source": "ARCHITECTURE.md §2",
+    "status": "implemented",
+    "test_ids": [
+      "TEST-011"
+    ]
+  },
+  {
+    "id": "REQ-009",
+    "title": "Drift-Free Machine State",
+    "description": "specsmith sync --check SHALL exit 0 on every push, confirming the YAML governance sources and .specsmith/ machine state are in sync.",
+    "source": "ARCHITECTURE.md §2",
+    "status": "implemented",
+    "test_ids": [
+      "TEST-012"
+    ]
+  },
+  {
+    "id": "REQ-010",
+    "title": "Strict Schema Validation",
+    "description": "specsmith validate --strict SHALL exit 0 with zero errors on every push, verifying no duplicate IDs, orphaned tests, or missing fields.",
+    "source": "ARCHITECTURE.md §2",
+    "status": "implemented",
+    "test_ids": [
+      "TEST-013"
+    ]
+  }
+]

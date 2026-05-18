@@ -1,0 +1,145 @@
+[
+  {
+    "id": "TEST-001",
+    "title": "CAN frame parse — standard 11-bit ID",
+    "description": "Parse a known-good 11-bit CAN frame and assert field values.",
+    "requirement_id": "REQ-001",
+    "type": "unit",
+    "verification_method": "pytest",
+    "input": {},
+    "expected_behavior": {},
+    "confidence": 1.0
+  },
+  {
+    "id": "TEST-002",
+    "title": "CAN frame parse — extended 29-bit ID",
+    "description": "Parse a 29-bit extended CAN frame and verify identifier masking.",
+    "requirement_id": "REQ-001",
+    "type": "unit",
+    "verification_method": "pytest",
+    "input": {},
+    "expected_behavior": {},
+    "confidence": 1.0
+  },
+  {
+    "id": "TEST-003",
+    "title": "ADC median filter correctness",
+    "description": "Feed 5 samples with a known median and assert filtered output.",
+    "requirement_id": "REQ-002",
+    "type": "unit",
+    "verification_method": "pytest",
+    "input": {},
+    "expected_behavior": {},
+    "confidence": 1.0
+  },
+  {
+    "id": "TEST-004",
+    "title": "CRC-32C accept valid frame",
+    "description": "A frame with correct CRC-32C passes validation without error.",
+    "requirement_id": "REQ-003",
+    "type": "unit",
+    "verification_method": "cargo test",
+    "input": {},
+    "expected_behavior": {},
+    "confidence": 1.0
+  },
+  {
+    "id": "TEST-005",
+    "title": "CRC-32C reject corrupted frame",
+    "description": "Flipping one byte in the payload causes the CRC check to fail.",
+    "requirement_id": "REQ-003",
+    "type": "unit",
+    "verification_method": "cargo test",
+    "input": {},
+    "expected_behavior": {},
+    "confidence": 1.0
+  },
+  {
+    "id": "TEST-006",
+    "title": "Ring buffer SPSC overflow drops oldest",
+    "description": "Fill the ring buffer beyond capacity; assert the oldest entry is dropped.",
+    "requirement_id": "REQ-004",
+    "type": "unit",
+    "verification_method": "cargo test",
+    "input": {},
+    "expected_behavior": {},
+    "confidence": 1.0
+  },
+  {
+    "id": "TEST-007",
+    "title": "REST /api/health returns JSON",
+    "description": "HTTP GET /api/health returns 200 with Content-Type application/json.",
+    "requirement_id": "REQ-005",
+    "type": "integration",
+    "verification_method": "pytest",
+    "input": {},
+    "expected_behavior": {},
+    "confidence": 1.0
+  },
+  {
+    "id": "TEST-008",
+    "title": "SSE /api/telemetry streams events",
+    "description": "Open an SSE connection; assert at least one event is received within 3 s.",
+    "requirement_id": "REQ-005",
+    "type": "integration",
+    "verification_method": "pytest",
+    "input": {},
+    "expected_behavior": {},
+    "confidence": 1.0
+  },
+  {
+    "id": "TEST-009",
+    "title": "SocketCAN graceful fallback",
+    "description": "With vcan0 absent, the gateway returns mock telemetry rather than raising.",
+    "requirement_id": "REQ-006",
+    "type": "integration",
+    "verification_method": "pytest",
+    "input": {},
+    "expected_behavior": {},
+    "confidence": 1.0
+  },
+  {
+    "id": "TEST-010",
+    "title": "Wayland headless mode",
+    "description": "When DISPLAY and WAYLAND_DISPLAY are unset, the display stub runs headless.",
+    "requirement_id": "REQ-007",
+    "type": "manual",
+    "verification_method": "manual",
+    "input": {},
+    "expected_behavior": {},
+    "confidence": 1.0
+  },
+  {
+    "id": "TEST-011",
+    "title": "specsmith audit exits 0",
+    "description": "Run specsmith audit --project-dir . and assert exit code 0.",
+    "requirement_id": "REQ-008",
+    "type": "cli",
+    "verification_method": "bash",
+    "input": {},
+    "expected_behavior": {},
+    "confidence": 1.0
+  },
+  {
+    "id": "TEST-012",
+    "title": "specsmith sync --check exits 0",
+    "description": "Run specsmith sync --check --project-dir . and assert exit code 0.",
+    "requirement_id": "REQ-009",
+    "type": "cli",
+    "verification_method": "bash",
+    "input": {},
+    "expected_behavior": {},
+    "confidence": 1.0
+  },
+  {
+    "id": "TEST-013",
+    "title": "specsmith validate --strict exits 0",
+    "description": "Run specsmith validate --strict --json --project-dir . and assert exit 0.",
+    "requirement_id": "REQ-010",
+    "type": "cli",
+    "verification_method": "bash",
+    "input": {},
+    "expected_behavior": {},
+    "confidence": 1.0
+  }
+]
